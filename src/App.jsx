@@ -1,58 +1,16 @@
 import { useState } from "react"
 import React from "react"
 import confetti from 'canvas-confetti'
-
-const TURNS = {
-  x: 'x',
-  o: 'o'
-}
-
-const Cell = ({children, index, isSelected, updateBoard}) => {
-  const className = `cell ${isSelected ? 'is-selected' : ''}`
-
-  const handlerClick = () => {
-    return updateBoard(index)
-  }
-  
-  return (
-    <div className={className} onClick={handlerClick}>
-      <span className="cell-content">
-        {children}
-      </span>
-    </div>
-  )
-}
-
-const combos = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]
-]
+import { Cell } from "./components/cells.jsx"
+import { TURNS } from "./consts/consts.js"
+import { checkWinner } from "./consts/consts.js"
+import { lastCheck } from "./consts/consts.js"
+import { ValidateWinner } from "./components/winner.jsx"
 
 export function App(){
   const [board, setBoard] = useState(Array(9).fill(null))
   const [turn, setTurn] = useState(TURNS.x)
   const [winner, setWinner] = useState(null)
-
-  const checkWinner = (board) => {
-    for(const combo of combos){
-      const [a, b, c] = combo
-      if(board[a] &&
-        board[a] === board[b] &&
-        board[a] === board[c]
-      ) return board[a]
-    }
-    return null
-  }
-
-  const lastCheck = (board) => {
-    return board.every(cell => cell !== null)
-  }
 
   const resetGame = () =>{
     setBoard(Array(9).fill(null))
@@ -111,31 +69,7 @@ export function App(){
         </section>
         <section className="results">
           {
-            winner !== null && (
-              <div className="modal">
-                <section className="resultados">
-                <span>
-                  {
-                    winner === false
-                    ? 'EMPATE'
-                    : 'GANADOR: '
-                  }
-                </span>
-                <header>
-                  {winner && <div className="cell">
-                    <span>
-                      {winner === TURNS.x || winner === TURNS.o
-                        ? winner
-                        : '-'
-                      }
-                    </span>
-                  </div>
-                  }
-                </header>
-                <button className="reset" onClick={resetGame}>Restart</button>
-              </section>
-              </div>
-            )
+            <ValidateWinner winner={winner} resetGame={resetGame}></ValidateWinner>
           }
         </section>
       </div>
